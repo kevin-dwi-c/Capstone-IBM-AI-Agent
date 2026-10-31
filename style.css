@@ -1,0 +1,643 @@
+/* ============================================================
+   PocketBuddy – style.css
+   Custom component classes, animations, and layout rules.
+   Tailwind handles utilities; this file handles components.
+   ============================================================ */
+
+/* ----- BASE ----- */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   FADE-IN ANIMATION (sections on load)
+   ============================================================ */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeInUp 0.45s ease both;
+}
+
+/* Stagger delay for sequential sections */
+.fade-in:nth-child(1) { animation-delay: 0.05s; }
+.fade-in:nth-child(2) { animation-delay: 0.12s; }
+.fade-in:nth-child(3) { animation-delay: 0.19s; }
+.fade-in:nth-child(4) { animation-delay: 0.26s; }
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.pb-header {
+  background: linear-gradient(135deg, #0F9D8A 0%, #0e7490 100%);
+  border-bottom-left-radius:  1.5rem;
+  border-bottom-right-radius: 1.5rem;
+  box-shadow: 0 4px 20px rgba(14, 116, 144, 0.35);
+}
+
+.pb-month-nav {
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 2.25rem;
+  height: 2.25rem;
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  font-size: 1.3rem;
+  line-height: 2.25rem;   /* matches height so text is vertically centred */
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, transform 0.12s;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.pb-month-nav:hover  { background: rgba(255,255,255,0.32); transform: scale(1.1); }
+.pb-month-nav:active { transform: scale(0.92); }
+.pb-month-nav:disabled { opacity: 0.35; cursor: default; transform: none; }
+
+.pb-header-logo {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: rgba(255,255,255,0.2);
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  backdrop-filter: blur(4px);
+}
+
+/* ============================================================
+   HERO CARD (Sisa Saldo)
+   ============================================================ */
+.pb-hero-card {
+  background: linear-gradient(135deg, #0F9D8A 0%, #0e7490 100%);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow: 0 8px 32px rgba(14, 116, 144, 0.3);
+  color: #fff;
+}
+
+.pb-hero-card-inner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+/* SVG illustration inside hero card */
+.pb-hero-illus {
+  width: 110px;
+  height: 100px;
+  flex-shrink: 0;
+  opacity: 0.92;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.18));
+}
+
+@media (max-width: 480px) {
+  .pb-hero-illus { width: 72px; height: 66px; }
+}
+
+/* 3 mini stat cards inside hero */
+.pb-mini-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+/* ── Kartu: desktop default – icon kiri, teks kolom di kanan ── */
+.pb-mini-card {
+  background: rgba(255,255,255,0.12);
+  border-radius: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.pb-mini-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* Wrapper teks: desktop → kolom (label atas, nilai bawah) */
+.pb-mini-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pb-mini-label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.6);
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.pb-mini-value {
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+/* ── Mobile (<768px): kartu bertumpuk, ikon+label kiri, nilai kanan ── */
+@media (max-width: 767px) {
+  /* Satu kolom penuh */
+  .pb-mini-cards {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  /* Card: pertahankan flex-row, ikon sudah di kiri */
+  .pb-mini-card {
+    padding: 0.6rem 0.875rem;
+  }
+
+  /* Wrapper teks jadi baris: label di kiri, nilai di kanan */
+  .pb-mini-text {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;           /* ambil sisa lebar setelah ikon */
+    gap: 0.5rem;
+  }
+}
+
+/* ============================================================
+   TWO-COLUMN LAYOUT
+   ============================================================ */
+.pb-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 900px) {
+  .pb-layout {
+    grid-template-columns: 1fr 1.1fr;
+    align-items: start;
+  }
+}
+
+/* ============================================================
+   CARD
+   ============================================================ */
+.card {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  box-shadow: 0 2px 12px rgba(15, 157, 138, 0.07), 0 1px 3px rgba(0,0,0,0.05);
+  border: 1px solid #f0fdfa;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 6px 24px rgba(15, 157, 138, 0.14), 0 2px 6px rgba(0,0,0,0.07);
+  transform: translateY(-1px);
+}
+
+/* ----- CARD TYPOGRAPHY ----- */
+.card-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.055em;
+  color: #94a3b8;
+  margin-bottom: 0.25rem;
+}
+
+.card-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.section-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* ============================================================
+   FORM ELEMENTS
+   ============================================================ */
+.form-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.form-input {
+  width: 100%;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: #1e293b;
+  background: #f8fafc;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: #0F9D8A;
+  box-shadow: 0 0 0 3px rgba(15,157,138,0.13);
+  background: #fff;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn-primary {
+  background: linear-gradient(135deg, #0F9D8A 0%, #0e7490 100%);
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.12s, box-shadow 0.15s;
+  box-shadow: 0 2px 8px rgba(15,157,138,0.3);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 4px 16px rgba(15,157,138,0.4);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: scale(0.96) translateY(0);
+  filter: brightness(0.95);
+}
+
+/* Full-width on mobile, auto on desktop */
+.btn-full { width: 100%; }
+
+@media (min-width: 768px) {
+  .btn-full { width: auto; min-width: 10rem; }
+}
+
+.btn-secondary {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
+}
+
+.btn-secondary:hover {
+  background: #e2e8f0;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.btn-secondary:active { transform: scale(0.97); }
+
+.btn-danger {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.55rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.12s;
+}
+
+.btn-danger:hover  { background: #dc2626; transform: translateY(-1px); }
+.btn-danger:active { transform: scale(0.97); }
+
+/* ============================================================
+   PROGRESS BARS
+   ============================================================ */
+.progress-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #334155;
+  font-weight: 600;
+}
+
+.progress-cat-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.progress-track {
+  width: 100%;
+  height: 10px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 0.3s ease;
+  width: 0%; /* start at 0 for animation */
+}
+
+.progress-fill.ok      { background: linear-gradient(90deg, #0F9D8A, #34d399); }
+.progress-fill.warning { background: linear-gradient(90deg, #f97316, #fbbf24); }
+.progress-fill.danger  { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+.progress-footer {
+  font-size: 0.68rem;
+  color: #94a3b8;
+  text-align: right;
+}
+
+.progress-warning-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-top: 0.1rem;
+}
+
+/* ============================================================
+   TRANSACTION ITEMS
+   ============================================================ */
+.tx-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 0.75rem;
+  padding: 0.65rem 0.875rem;
+  font-size: 0.8125rem;
+  border: 1px solid #f1f5f9;
+  background: #f8fafc;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+
+.tx-item:hover {
+  background: #f0fdf9;
+  transform: translateX(2px);
+  box-shadow: 0 2px 8px rgba(15,157,138,0.08);
+}
+
+.tx-cat-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.tx-badge {
+  font-size: 0.63rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tx-badge-income  { background: #ccfbf1; color: #0f766e; }
+.tx-badge-expense { background: #fff7ed; color: #c2410c; }
+
+/* ============================================================
+   COUNT-UP NUMBER ANIMATION
+   ============================================================ */
+@keyframes countPulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+.count-updated {
+  animation: countPulse 0.35s ease;
+}
+
+/* ============================================================
+   CHART WRAPPER + EMPTY STATE
+   ============================================================ */
+.chart-wrapper {
+  position: relative;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Cashflow chart is taller to show two datasets clearly */
+.chart-wrapper-lg {
+  position: relative;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---- Cashflow tab buttons ---- */
+.cf-tabs {
+  display: flex;
+  gap: 0.375rem;
+  margin-bottom: 0.75rem;
+}
+
+.cf-tab {
+  flex: 1;
+  padding: 0.35rem 0;
+  border-radius: 0.5rem;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  text-align: center;
+}
+
+.cf-tab:hover { background: #f0fdf9; border-color: #0F9D8A; color: #0F9D8A; }
+
+.cf-tab.active {
+  background: #0F9D8A;
+  color: #fff;
+  border-color: #0F9D8A;
+}
+
+/* ── Totals row beneath cashflow chart ── */
+.cf-totals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;  /* selalu 2 kolom sejajar */
+  gap: 0.5rem 1rem;
+  margin-top: 0.875rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+/* Tiap item: kolom — header (dot + label) di atas, nilai di bawah, rata tengah */
+.cf-total-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+/* Baris atas: dot berwarna + teks label */
+.cf-total-header {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.cf-dot {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cf-total-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.cf-total-value {
+  font-size: 0.88rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.chart-empty-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  background: rgba(255,255,255,0.95);
+  border-radius: 0.5rem;
+  pointer-events: none;
+  text-align: center;
+  padding: 1rem;
+}
+
+/* ============================================================
+   TRANSACTION EMPTY STATE
+   ============================================================ */
+.tx-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2.5rem 1rem;
+  color: #94a3b8;
+  text-align: center;
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(calc(100% + 2rem));
+  background: #1e293b;
+  color: #fff;
+  padding: 0.7rem 1.25rem;
+  border-radius: 0.75rem;
+  font-size: 0.825rem;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  z-index: 9999;
+  pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
+  opacity: 0;
+  white-space: nowrap;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+  padding: 1rem;
+  backdrop-filter: blur(2px);
+}
+
+.modal-overlay.hidden { display: none !important; }
+
+.modal-box {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.18);
+  animation: fadeInUp 0.2s ease;
+}
+
+/* ============================================================
+   UTILITY
+   ============================================================ */
+.hidden { display: none !important; }
+
+@media (max-width: 480px) {
+  .pb-hero-card { padding: 1.1rem; }
+}

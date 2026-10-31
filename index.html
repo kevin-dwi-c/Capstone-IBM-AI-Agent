@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PocketBuddy – Atur Uang Bulanan</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="style.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            teal:   { DEFAULT: '#0F9D8A', light: '#ccfbf1', dark: '#0e7490' },
+            orange: { DEFAULT: '#f97316', light: '#fff7ed' },
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+  <!-- ===== HEADER ===== -->
+  <header class="pb-header">
+    <div class="max-w-6xl mx-auto px-4 py-5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="pb-header-logo">💰</div>
+        <div>
+          <h1 class="text-xl font-bold leading-tight text-white">PocketBuddy</h1>
+          <p id="header-greeting" class="text-teal-light text-xs opacity-90">Kelola uang bulananmu</p>
+        </div>
+      </div>
+      <!-- Month picker -->
+      <div class="flex items-center gap-1">
+        <button id="btn-prev-month" class="pb-month-nav" aria-label="Bulan sebelumnya">&#8249;</button>
+        <span id="header-month" class="text-sm font-semibold bg-white/20 text-white px-3 py-1.5 rounded-full backdrop-blur-sm min-w-[9rem] text-center"></span>
+        <button id="btn-next-month" class="pb-month-nav" aria-label="Bulan berikutnya">&#8250;</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+
+    <!-- ===== HERO CARD: SISA SALDO ===== -->
+    <section aria-label="Sisa saldo" class="fade-in">
+      <div class="pb-hero-card">
+        <div class="pb-hero-card-inner">
+          <div>
+            <p class="text-white/70 text-xs uppercase tracking-widest font-semibold mb-1">Sisa Saldo</p>
+            <p id="dash-balance" class="text-4xl font-bold text-white tracking-tight">Rp0</p>
+            <p id="dash-days" class="text-white/60 text-xs mt-1">&nbsp;</p>
+          </div>
+          <!-- Inline SVG: flat mahasiswa + dompet + koin -->
+          <div class="pb-hero-illus" aria-hidden="true">
+            <svg viewBox="0 0 120 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Body -->
+              <ellipse cx="60" cy="92" rx="24" ry="10" fill="rgba(255,255,255,0.12)"/>
+              <rect x="46" y="62" width="28" height="36" rx="8" fill="#fff" fill-opacity=".22"/>
+              <!-- Head -->
+              <circle cx="60" cy="48" r="16" fill="#fff" fill-opacity=".9"/>
+              <!-- Hair / cap -->
+              <path d="M44 46 Q60 28 76 46" fill="#f97316" fill-opacity=".85"/>
+              <rect x="42" y="44" width="36" height="5" rx="2.5" fill="#f97316" fill-opacity=".9"/>
+              <!-- Face dots (eyes) -->
+              <circle cx="55" cy="47" r="2" fill="#0e7490"/>
+              <circle cx="65" cy="47" r="2" fill="#0e7490"/>
+              <!-- Smile -->
+              <path d="M55 53 Q60 57 65 53" stroke="#0e7490" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+              <!-- Left arm holding wallet -->
+              <path d="M46 72 Q34 76 32 85" stroke="#fff" stroke-opacity=".8" stroke-width="5" stroke-linecap="round" fill="none"/>
+              <!-- Wallet -->
+              <rect x="22" y="82" width="20" height="14" rx="3" fill="#fbbf24"/>
+              <rect x="22" y="87" width="20" height="3" fill="#f59e0b"/>
+              <circle cx="36" cy="89" r="2.5" fill="#fff" fill-opacity=".7"/>
+              <!-- Right arm -->
+              <path d="M74 72 Q82 76 84 72" stroke="#fff" stroke-opacity=".8" stroke-width="5" stroke-linecap="round" fill="none"/>
+              <!-- Coins floating -->
+              <circle cx="95" cy="45" r="8" fill="#fbbf24"/>
+              <text x="95" y="49" text-anchor="middle" font-size="8" fill="#fff" font-weight="bold">Rp</text>
+              <circle cx="108" cy="30" r="6" fill="#fbbf24" fill-opacity=".75"/>
+              <text x="108" y="34" text-anchor="middle" font-size="6" fill="#fff" font-weight="bold">$</text>
+              <circle cx="94" cy="18" r="5" fill="#f97316" fill-opacity=".7"/>
+              <!-- Stars / sparkles -->
+              <path d="M85 58 L86.5 55 L88 58 L85 56.5z" fill="#fff" fill-opacity=".6"/>
+              <path d="M100 62 L101 60 L102 62 L100 61z" fill="#fbbf24" fill-opacity=".8"/>
+            </svg>
+          </div>
+        </div>
+        <!-- 3 mini cards
+             Desktop: icon | [label atas / nilai bawah] (flex-col di .pb-mini-text)
+             Mobile : icon | label ──────────── nilai   (flex-row di .pb-mini-text) -->
+        <div class="pb-mini-cards">
+          <div class="pb-mini-card">
+            <span class="pb-mini-icon">📥</span>
+            <div class="pb-mini-text">
+              <p class="pb-mini-label">Total Pemasukan</p>
+              <p id="dash-income" class="pb-mini-value text-emerald-300">Rp0</p>
+            </div>
+          </div>
+          <div class="pb-mini-card">
+            <span class="pb-mini-icon">📤</span>
+            <div class="pb-mini-text">
+              <p class="pb-mini-label">Total Pengeluaran</p>
+              <p id="dash-expense" class="pb-mini-value text-orange-300">Rp0</p>
+            </div>
+          </div>
+          <div class="pb-mini-card">
+            <span class="pb-mini-icon">📅</span>
+            <div class="pb-mini-text">
+              <p class="pb-mini-label">Sisa/Hari</p>
+              <p id="dash-daily" class="pb-mini-value text-sky-300">Rp0</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TWO-COLUMN LAYOUT (desktop) ===== -->
+    <div class="pb-layout">
+
+      <!-- ===== LEFT COLUMN: FORMS ===== -->
+      <div class="space-y-6">
+
+        <!-- ===== BUDGET SETUP ===== -->
+        <section aria-label="Pengaturan budget" class="fade-in">
+          <div class="card">
+            <h2 class="section-title">⚙️ Pengaturan Budget</h2>
+
+            <!-- Ringkasan budget aktif -->
+            <div id="budget-summary" class="hidden flex-col sm:flex-row sm:items-center gap-3">
+              <p class="text-sm text-slate-600 flex-1">
+                Budget aktif: <span id="budget-summary-amount" class="font-bold text-teal"></span>
+              </p>
+              <div class="flex gap-2 flex-wrap">
+                <button id="btn-edit-budget" type="button" class="btn-secondary text-sm">✏️ Ubah Budget</button>
+              </div>
+            </div>
+
+            <!-- Form budget -->
+            <form id="form-budget" class="space-y-4" novalidate>
+              <div>
+                <label class="form-label" for="total-budget">Uang Bulanan / Saldo Awal (Rp)</label>
+                <input id="total-budget" type="text" inputmode="numeric" placeholder="Contoh: 1.500.000"
+                  class="form-input" data-money required />
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="form-label" for="budget-makan">🍜 Makan (Rp)</label>
+                  <input id="budget-makan" type="text" inputmode="numeric" placeholder="0" class="form-input" data-cat="Makan" data-money />
+                </div>
+                <div>
+                  <label class="form-label" for="budget-jajan">🧋 Jajan (Rp)</label>
+                  <input id="budget-jajan" type="text" inputmode="numeric" placeholder="0" class="form-input" data-cat="Jajan" data-money />
+                </div>
+                <div>
+                  <label class="form-label" for="budget-transport">🛵 Transport (Rp)</label>
+                  <input id="budget-transport" type="text" inputmode="numeric" placeholder="0" class="form-input" data-cat="Transport" data-money />
+                </div>
+                <div>
+                  <label class="form-label" for="budget-kuliah">📚 Kuliah (Rp)</label>
+                  <input id="budget-kuliah" type="text" inputmode="numeric" placeholder="0" class="form-input" data-cat="Kuliah" data-money />
+                </div>
+                <div>
+                  <label class="form-label" for="budget-lainnya">📦 Lainnya (Rp)</label>
+                  <input id="budget-lainnya" type="text" inputmode="numeric" placeholder="0" class="form-input" data-cat="Lainnya" data-money />
+                </div>
+              </div>
+              <!-- Tombol salin budget bulan lalu – ditampilkan via JS bila ada -->
+              <div id="btn-copy-budget-wrap" class="hidden">
+                <button type="button" id="btn-copy-budget" class="btn-secondary btn-full text-sm">📋 Salin Budget Bulan Lalu</button>
+              </div>
+              <button type="submit" class="btn-primary btn-full">Simpan Budget</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- ===== BUDGET PROGRESS ===== -->
+        <section aria-label="Progres budget" class="fade-in">
+          <div class="card">
+            <h2 class="section-title">📊 Progres Budget</h2>
+            <div id="budget-progress-container" class="space-y-4"></div>
+          </div>
+        </section>
+
+        <!-- ===== PEMASUKAN ===== -->
+        <section aria-label="Pencatatan pemasukan" class="fade-in">
+          <div class="card">
+            <h2 class="section-title">💵 Tambah Pemasukan Lain</h2>
+            <p class="text-xs text-slate-400 -mt-3 mb-3">Freelance, beasiswa, dll. Uang bulanan sudah otomatis dari Pengaturan Budget.</p>
+            <form id="form-income" class="grid grid-cols-1 gap-3" novalidate>
+              <input type="hidden" id="income-edit-id" value="" />
+              <div>
+                <label class="form-label" for="income-source">Sumber</label>
+                <input id="income-source" type="text" placeholder="Contoh: Freelance, Beasiswa" class="form-input" required />
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="form-label" for="income-amount">Nominal (Rp)</label>
+                  <input id="income-amount" type="text" inputmode="numeric" placeholder="0" class="form-input" data-money required />
+                </div>
+                <div>
+                  <label class="form-label" for="income-date">Tanggal</label>
+                  <input id="income-date" type="date" class="form-input" required />
+                </div>
+              </div>
+              <div class="flex flex-col md:flex-row gap-2">
+                <button type="submit" id="btn-income-submit" class="btn-primary btn-full">Tambah Pemasukan</button>
+                <button type="button" id="btn-income-cancel" class="btn-secondary hidden">Batal Edit</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- ===== PENGELUARAN ===== -->
+        <section aria-label="Pencatatan pengeluaran" class="fade-in">
+          <div class="card">
+            <h2 class="section-title">💸 Tambah Pengeluaran</h2>
+            <form id="form-expense" class="grid grid-cols-1 gap-3" novalidate>
+              <input type="hidden" id="expense-edit-id" value="" />
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="form-label" for="expense-amount">Nominal (Rp)</label>
+                  <input id="expense-amount" type="text" inputmode="numeric" placeholder="0" class="form-input" data-money required />
+                </div>
+                <div>
+                  <label class="form-label" for="expense-category">Kategori</label>
+                  <select id="expense-category" class="form-input" required>
+                    <option value="">-- Pilih --</option>
+                    <option value="Makan">🍜 Makan</option>
+                    <option value="Jajan">🧋 Jajan</option>
+                    <option value="Transport">🛵 Transport</option>
+                    <option value="Kuliah">📚 Kuliah</option>
+                    <option value="Lainnya">📦 Lainnya</option>
+                  </select>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="form-label" for="expense-date">Tanggal</label>
+                  <input id="expense-date" type="date" class="form-input" required />
+                </div>
+                <div>
+                  <label class="form-label" for="expense-note">Catatan</label>
+                  <input id="expense-note" type="text" placeholder="Opsional" class="form-input" />
+                </div>
+              </div>
+              <div class="flex flex-col md:flex-row gap-2">
+                <button type="submit" id="btn-expense-submit" class="btn-primary btn-full">Tambah Pengeluaran</button>
+                <button type="button" id="btn-expense-cancel" class="btn-secondary hidden">Batal Edit</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+      </div><!-- end left column -->
+
+      <!-- ===== RIGHT COLUMN: CHARTS + HISTORY ===== -->
+      <div class="space-y-6">
+
+        <!-- ===== GRAFIK ===== -->
+        <section aria-label="Grafik pengeluaran" class="fade-in">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="card">
+              <h2 class="section-title justify-center">🍩 Per Kategori</h2>
+              <div class="chart-wrapper">
+                <canvas id="chart-donut" aria-label="Donut chart pengeluaran per kategori"></canvas>
+                <div id="chart-donut-empty" class="chart-empty-state">
+                  <span class="text-4xl">📊</span>
+                  <span class="font-semibold text-slate-500">Belum ada data</span>
+                  <span class="text-xs text-slate-400">Catat pengeluaran pertamamu!</span>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <h2 class="section-title justify-center">💹 Cashflow</h2>
+              <!-- Tab filter -->
+              <div class="cf-tabs" role="tablist">
+                <button class="cf-tab active" data-cf-tab="all"    role="tab">Cashflow</button>
+                <button class="cf-tab"        data-cf-tab="expense" role="tab">Pengeluaran</button>
+                <button class="cf-tab"        data-cf-tab="income"  role="tab">Pemasukan</button>
+              </div>
+              <!-- Chart -->
+              <div class="chart-wrapper-lg">
+                <canvas id="chart-bar" aria-label="Cashflow bar chart per rentang tanggal"></canvas>
+                <div id="chart-bar-empty" class="chart-empty-state">
+                  <span class="text-4xl">📈</span>
+                  <span class="font-semibold text-slate-500">Belum ada data</span>
+                  <span class="text-xs text-slate-400">Grafik akan muncul di sini</span>
+                </div>
+              </div>
+              <!-- Totals below chart: 2 kolom sejajar, label atas – nilai bawah, rata tengah -->
+              <div class="cf-totals">
+                <div class="cf-total-item">
+                  <div class="cf-total-header">
+                    <span class="cf-dot" style="background:#f97316;"></span>
+                    <span class="cf-total-label">Pengeluaran</span>
+                  </div>
+                  <span id="cf-total-expense" class="cf-total-value text-orange-500">Rp0</span>
+                </div>
+                <div class="cf-total-item">
+                  <div class="cf-total-header">
+                    <span class="cf-dot" style="background:#0F9D8A;"></span>
+                    <span class="cf-total-label">Pemasukan</span>
+                  </div>
+                  <span id="cf-total-income" class="cf-total-value text-teal">Rp0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== RIWAYAT TRANSAKSI ===== -->
+        <section aria-label="Riwayat transaksi" class="fade-in">
+          <div class="card">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="section-title mb-0">📋 Riwayat Transaksi</h2>
+              <button id="btn-clear-all" class="text-xs text-red-400 hover:text-red-600 transition-colors font-medium">Hapus Semua</button>
+            </div>
+            <div id="transaction-list" class="space-y-2"></div>
+          </div>
+        </section>
+
+      </div><!-- end right column -->
+
+    </div><!-- end pb-layout -->
+
+  </main>
+
+  <!-- ===== TOAST NOTIFICATION ===== -->
+  <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+
+  <!-- ===== MODAL KONFIRMASI HAPUS ===== -->
+  <div id="modal-confirm" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-box">
+      <h3 id="modal-title" class="text-base font-semibold mb-2">Konfirmasi Hapus</h3>
+      <p id="modal-message" class="text-sm text-slate-500 mb-4"></p>
+      <div class="flex justify-end gap-2">
+        <button id="modal-cancel" class="btn-secondary">Batal</button>
+        <button id="modal-confirm-btn" class="btn-danger">Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
